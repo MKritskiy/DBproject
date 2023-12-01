@@ -5,7 +5,7 @@ namespace DBproject.DAL
 {
     public class DbHelper
     {
-        public static string ConnString = @"server=localhost;userid=dbuser;password=secret;database=testdb";
+        public static string ConnString = @"server=localhost;port=3306;userid=root;password=secret;database=cocodo; AllowUserVariables=true";
 
         public static async Task ExecuteAsync(string sql, object model)
         {

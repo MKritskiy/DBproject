@@ -1,4 +1,26 @@
+
+using DBproject.BL.Auth;
+using DBproject.DAL;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IAuth, Auth>();
+builder.Services.AddSingleton<IEncrypt, Encrypt>();
+builder.Services.AddSingleton<DBproject.DAL.IExecutorDAL, DBproject.DAL.ExecutorDAL>();
+builder.Services.AddSingleton<DBproject.DAL.IRoleDAL, DBproject.DAL.RoleDAL>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<ITeamDAL, TeamDAL>();
+builder.Services.AddScoped<DBproject.BL.Team.ITeam, DBproject.BL.Team.Team>();
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/accessdenied";
+    });
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -17,7 +39,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

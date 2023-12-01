@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Org.BouncyCastle.Crmf;
 using System.Security.Claims;
 
-namespace DBproject.BL
+namespace DBproject.BL.Auth
 {
-    public class Auth
+    public class Auth : IAuth
     {
         public readonly IExecutorDAL executorDAL;
         public readonly IRoleDAL roleDAL;
@@ -30,12 +30,12 @@ namespace DBproject.BL
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, executor.ExecutorName),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, role.RoleName)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, executor.ExecutorId.ToString()),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name)
             };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            
+
             await httpContextAccessor.HttpContext.SignInAsync(claimsPrincipal);
         }
 
@@ -43,7 +43,7 @@ namespace DBproject.BL
         {
             var executor = await executorDAL.GetExecutor(name);
 
-            if (executor.ExecutorId != null && executor.ExecutorPassword == encrypt.HashPassword(password))
+            if (executor.ExecutorId != null && executor.Password == encrypt.HashPassword(password))
             {
                 await Login(executor.ExecutorId ?? 0);
 
@@ -56,7 +56,7 @@ namespace DBproject.BL
 
         public async Task<int> CreateExecutor(ExecutorModel model)
         {
-            model.ExecutorPassword = encrypt.HashPassword(model.ExecutorPassword);
+            model.Password = encrypt.HashPassword(model.Password);
             int id = await executorDAL.CreateExecutor(model);
             await Login(id);
             return id;
@@ -71,11 +71,18 @@ namespace DBproject.BL
                 throw new Exception("Duplicate name exception");
         }
 
-        public async Task Registration(ExecutorModel model)
+        public async Task Register(string name, string password)
         {
-            await ValidateName(model.ExecutorName);
+            ExecutorModel model = new ExecutorModel() { Name = name, Password = password };
+            model.RoleId = Helper.UserRoleID;
+            await ValidateName(model.Name);
             await CreateExecutor(model);
-            
+
+        }
+
+        public async Task Logout()
+        {
+            await httpContextAccessor.HttpContext.SignOutAsync();
         }
     }
 }

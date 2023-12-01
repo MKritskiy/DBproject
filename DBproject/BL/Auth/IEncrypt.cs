@@ -1,4 +1,4 @@
-﻿namespace DBproject.BL
+﻿namespace DBproject.BL.Auth
 {
     public interface IEncrypt
     {

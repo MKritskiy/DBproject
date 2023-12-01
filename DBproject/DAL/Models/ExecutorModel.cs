@@ -1,12 +1,16 @@
-﻿namespace DBproject.DAL.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DBproject.DAL.Models
 {
     public class ExecutorModel
     {
         public int? ExecutorId;
-        public string ExecutorName =null!;
-        public string? ExecutorEmail;
-        public string ExecutorPassword = null!;
-        public string? ExecutorPhoneNumber;
+        [Required]
+        public string Name = null!;
+        public string? Email;
+        [Required]
+        public string Password = null!;
+        public string? PhoneNumber;
         public int RoleId;
     }
 }

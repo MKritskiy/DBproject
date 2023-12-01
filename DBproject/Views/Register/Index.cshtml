@@ -1,0 +1,22 @@
+﻿@model DBproject.DAL.Models.ExecutorModel
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h2>Login Form</h2>
+<form action="/register" method='post'>
+    @Html.AntiForgeryToken()
+    <p>
+        <label>Имя</label><br />
+        <input name='Name' type="text" value="@Model.Name" />
+        <div class="error">@Html.ValidationMessageFor(m=>m.Name)</div>
+    </p>
+    <p>
+        <label>Пароль</label><br />
+        <input type='password' name='Password' />
+        <div class="error">@Html.ValidationMessageFor(m=>m.Password)</div>
+
+    </p>
+    <button>Зарегистрироваться</button>
+</form>

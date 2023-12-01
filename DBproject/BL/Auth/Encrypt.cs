@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace DBproject.BL
+namespace DBproject.BL.Auth
 {
     public class Encrypt : IEncrypt
     {
