@@ -14,6 +14,7 @@ namespace DBproject.DAL
                 await connection.OpenAsync();
                 await connection.ExecuteAsync(sql, model);
             }
+            
         }
 
         public static async Task<T?> QueryScalarAsync<T>(string sql, object model)
