@@ -1,17 +1,22 @@
 
 using DBproject.BL.Auth;
+using DBproject.BL.TaskList;
 using DBproject.DAL;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAuth, Auth>();
+builder.Services.AddScoped<DBproject.BL.Team.ITeam, DBproject.BL.Team.Team>();
+builder.Services.AddScoped<ITaskList, TaskList>();
+
 builder.Services.AddSingleton<IEncrypt, Encrypt>();
-builder.Services.AddSingleton<DBproject.DAL.IExecutorDAL, DBproject.DAL.ExecutorDAL>();
-builder.Services.AddSingleton<DBproject.DAL.IRoleDAL, DBproject.DAL.RoleDAL>();
+builder.Services.AddSingleton<IExecutorDAL, ExecutorDAL>();
+builder.Services.AddSingleton<IRoleDAL, RoleDAL>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ITeamDAL, TeamDAL>();
-builder.Services.AddScoped<DBproject.BL.Team.ITeam, DBproject.BL.Team.Team>();
+builder.Services.AddSingleton<ITaskListDAL, TaskListDAL>();
+
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

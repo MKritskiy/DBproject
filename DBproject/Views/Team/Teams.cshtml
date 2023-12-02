@@ -3,22 +3,23 @@
     ViewData["Title"] = "Все команды";
 }
 
-<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4 mb-4">Добро пожаловать</h1>
-        <div class="row">
-            @foreach (var team in Model)
-            {
-                <div class="col-md-3">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <a href="/team/@team.TeamId" class="text-decoration-none">
-                                <h2 class="card-title h4">@team.Name</h2>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Team ID</th>
+            <th>Name</th>
+            <th>TaskLists</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var team in Model)
+        {
+            <tr>
+                <td>@team.TeamId</td>
+                <td>@team.Name</td>
+                <td><a href="/team/@team.TeamId">Ссылка</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

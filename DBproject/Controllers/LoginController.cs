@@ -31,7 +31,7 @@ namespace DBproject.Controllers
                     return Redirect("/");
                 } catch (Exception)
                 {
-                    ModelState.AddModelError("Form", "Имя или Пароль неверные");
+                    ModelState.AddModelError("Name", "Имя или Пароль неверные");
                 }
             }
             return View(new ExecutorModel() { Name=Name, Password=Password});

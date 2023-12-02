@@ -1,9 +1,12 @@
-﻿namespace DBproject.DAL.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DBproject.DAL.Models
 {
     public class TaskListModel
     {
         public int? TaskListId { get; set; }
-        public string? TaskListName { get; set; }
+        [Required]
+        public string? Name { get; set; } = null!;
         public int TeamId { get; set; }
     }
 }

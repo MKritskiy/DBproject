@@ -1,0 +1,34 @@
+﻿@model DBproject.ViewModels.TeamViewModel
+@{
+    ViewData["Title"] = "Списки задач";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Task List ID</th>
+            <th>Name</th>
+            <th>Team ID</th>
+            <th>Link</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.taskList != null)
+        {
+            @foreach (var taskList in Model.taskList)
+            {
+                <tr>
+                    <td>@taskList.TaskListId</td>
+                    <td>@taskList.Name</td>
+                    <td>@taskList.TeamId</td>
+                    <td><a href="/team/@taskList.TeamId/tasklist/@taskList.TaskListId">Ссылка</a></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.team != null)
+{
+    <a href="/team/@Model.team.TeamId/tasklistedit">Создать список</a>
+}

@@ -1,0 +1,16 @@
+﻿@model DBproject.DAL.Models.TaskListModel
+
+@{
+    ViewData["Title"] = "Создание списка задач";
+}
+
+<h2>Task List form</h2>
+<form action="/team/@Model.TeamId/tasklistedit" method='post'>
+    @Html.AntiForgeryToken()
+    <p>
+        <label>Название</label><br />
+        <input name='Name' type="text" value="@Model.Name" />
+        <div class="error">@Html.ValidationMessageFor(m=>m.Name)</div>
+    </p>
+    <button>Создать</button>
+</form>
