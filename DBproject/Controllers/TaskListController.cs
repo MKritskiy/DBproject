@@ -1,5 +1,6 @@
 ﻿using DBproject.BL.Auth;
 using DBproject.BL.TaskList;
+using DBproject.BL.Tasks;
 using DBproject.BL.Team;
 using DBproject.DAL.Models;
 using DBproject.ViewModels;
@@ -39,8 +40,8 @@ namespace DBproject.Controllers
             {
                 if (model.TaskListId == null)
                     model.TeamId = teamid;
-                await taskListBL.UpdateOrCreateTaskList(model);
-                return Redirect("/");
+                await taskListBL.UpdateOrCreate(model);
+                return Redirect("/team/"+teamid);
 
             }
             return View(model);
@@ -61,7 +62,15 @@ namespace DBproject.Controllers
             var tasklist = await taskListBL.GetTaskListsByTeamId(teamid);
             var team = await teamBL.GetTeam(teamid);
             
-            return View("TeamTaskLists", new TeamViewModel() { taskList = tasklist, team=team});
+            return View("TeamTaskLists", new TeamViewModel() { TaskList = tasklist, Team=team});
+        }
+
+        [HttpGet]
+        [Route("/team/{teamid}/tasklistdelete/{tasklistid}")]
+        public async Task<IActionResult> IndexDelete(int teamid, int tasklistid)
+        {
+            await taskListBL.Delete(tasklistid);
+            return Redirect("/team/" + teamid);
         }
     }
 }

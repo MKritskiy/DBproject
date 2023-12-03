@@ -6,20 +6,42 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Team ID</th>
             <th>Name</th>
             <th>TaskLists</th>
-
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var team in Model)
         {
-            <tr>
-                <td>@team.TeamId</td>
+
+            <tr id="editRow-@team.TeamId" style="display: none;">
+                <form action="/teamedit/" method="POST">
+                    <input type="hidden" name="TeamId" value="@team.TeamId">
+                <td><input type="text" name="Name" class="form-control" value="@team.Name"></td>
+                <td><button class="btn btn-primary">Сохранить</button></td>
+                </form>
+            </tr>
+
+
+            <tr id="row-@team.TeamId">
                 <td>@team.Name</td>
                 <td><a href="/team/@team.TeamId">Ссылка</a></td>
+                <td>
+                    <button class="btn btn-primary editBtn" onclick="editRow(@team.TeamId)">Изменить</button>
+                    <a class="btn btn-primary" href="/teamdelete/@team.TeamId">Удалить</a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+<script>
+    function editRow(taskid) {
+        var row = $('#row-' + taskid);
+        var editRow = $('#editRow-' + taskid);
+
+        row.hide();
+        editRow.show();
+    }
+</script>

@@ -9,22 +9,22 @@
     @Html.AntiForgeryToken()
     <p>
         <label>Название</label><br />
-        <input name='Name' type="text" value="@Model.CurrTask?.Name" />
+        <input name='CurrTask.Name' type="text" value="@Model.CurrTask?.Name" />
         <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.Name)</div>
     </p>
     <p>
         <label>Описание</label><br />
-        <input name='Description' type="text" value="@Model.CurrTask?.Description" />
+        <input name='CurrTask.Description' type="text" value="@Model.CurrTask?.Description" />
         <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.Description)</div>
     </p>
     <p>
         <label>Приоритет</label><br />
-        <input name='Proirity' type="text" value="@Model.CurrTask?.Proirity" />
-        <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.Proirity)</div>
+        <input name='CurrTask.Priority' type="text" value="@Model.CurrTask?.Priority" />
+        <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.Priority)</div>
     </p>
     <p>
         <label>Дедлайн</label><br />
-        <input name='DeadlineDate' type="text" value="@Model.CurrTask?.DeadlineDate" />
+        <input name='CurrTask.DeadlineDate' type="text" value="@Model.CurrTask?.DeadlineDate" />
         <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.DeadlineDate)</div>
     </p>
     <button>Создать</button>

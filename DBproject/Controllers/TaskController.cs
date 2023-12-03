@@ -40,9 +40,9 @@ namespace DBproject.Controllers
             {
                 var task = model.CurrTask;
                 string executorId = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType).Value;
-
-                if (task.TaskListId == null)
-                    task.TaskListId = tasklistid;
+                if (task == null)
+                    throw new Exception("Задача не заполнена");
+                task.TaskListId = tasklistid;
                 task.StatusId = 1;
                 task.SourceId = int.Parse(executorId);
                 await taskBL.UpdateOrCreateTask(task);
@@ -60,6 +60,14 @@ namespace DBproject.Controllers
             var tasks = await taskBL.GetAllByTaskListId(tasklistid);
             
             return View("TaskListTasks", new TaskListViewModel() { Tasks = tasks, TaskList = tasklist});
+        }
+
+        [HttpGet]
+        [Route("/team/{teamid}/tasklist/{tasklistid}/taskdelete/{taskid}")]
+        public async Task<IActionResult> IndexDelete(int teamid, int tasklistid, int taskid)
+        {
+            await taskBL.Delete(taskid);
+            return Redirect("/team/" + teamid + "/tasklist/" + tasklistid);
         }
     }
 }

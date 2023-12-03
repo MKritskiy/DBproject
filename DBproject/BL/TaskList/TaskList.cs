@@ -12,7 +12,7 @@ namespace DBproject.BL.TaskList
             this.taskListDAL = taskListDAL;
         }
 
-        public async Task<int> CreateTaskList(TaskListModel model)
+        public async Task<int> Create(TaskListModel model)
         {
             return await taskListDAL.CreateTaskList(model);
         }
@@ -32,16 +32,23 @@ namespace DBproject.BL.TaskList
             return await taskListDAL.GetTaskListsByTeamId(teamid); 
         }
 
-        public async Task UpdateTaskList(TaskListModel model)
-        {
-            await taskListDAL.UpdateTaskList(model);
-        }
-
-        public async Task UpdateOrCreateTaskList(TaskListModel model)
+        public async Task UpdateOrCreate(TaskListModel model)
         {
             if (model.TaskListId != null)
-                await UpdateTaskList(model);
-            await CreateTaskList(model);
+                await Update(model);
+            else
+                await Create(model);
         }
+
+        public async Task Delete(int id)
+        {
+            await taskListDAL.Delete(id);
+        }
+
+        public async Task Update(TaskListModel model)
+        {
+            await taskListDAL.Update(model);
+        }
+
     }
 }

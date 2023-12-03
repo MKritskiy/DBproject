@@ -8,6 +8,7 @@ namespace DBproject.DAL
         Task<IEnumerable<TaskListModel>> GetTaskListsByTeamId(int teamid);
         Task<IEnumerable<TaskListModel>> GetTaskLists();
         Task<int> CreateTaskList(TaskListModel model);
-        Task UpdateTaskList(TaskListModel model);
+        Task Delete(int id);
+        Task Update(TaskListModel model);
     }
 }

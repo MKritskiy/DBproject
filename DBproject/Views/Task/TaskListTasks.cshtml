@@ -15,45 +15,41 @@
                 <th>Status</th>
                 <th>Deadline</th>
                 <th>TaskList ID</th>
-                <th>Изменить</th>
-                <th>Удалить</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @if (Model.Tasks != null)
+        @if (Model.Tasks != null)
+        {
+            @foreach (var task in Model.Tasks)
             {
-                @foreach (var task in Model.Tasks)
-                {
+                <tr id="editRow-@task.TaskId" style="display: none;">
+                    <form action="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskedit" method="POST">
+                        <input type="hidden" name="CurrTask.TaskId" value="@task.TaskId" class="editTaskIdInput">
+                        <td><input type="text" name="CurrTask.Name" class="form-control editTaskName" value="@task.Name"></td>
+                        <td><input type="text" name="CurrTask.Description"  class="form-control editTaskDescription" value="@task.Description"></td>
+                        <td><input type="text" name="CurrTask.Priority" class="form-control editTaskPriority"></td>
+                        <td><span class="taskStatus" name="CurrTask.StatusId">@task.StatusId</span></td>
+                        <td><input type="text" name="CurrTask.DeadlineDate" class="form-control editTaskDeadline"></td>
+                        <td><span class="taskTaskListId" name="CurrTask.TaskListId">@task.TaskListId</span></td>
+                        <td><button class="btn btn-primary btn-sm">Сохранить</button></td>
+                    </form>
+                </tr>
+                <tr id="row-@task.TaskId">
+                    <td><span class="taskName">@task.Name</span></td>
+                    <td><span class="taskDescription">@task.Description</span></td>
+                    <td><span class="taskPriority">@task.Priority</span></td>
+                    <td><span class="taskStatus">@task.StatusId</span></td>
+                    <td><span class="taskDeadline">@task.DeadlineDate</span></td>
+                    <td><span class="taskTaskListId">@task.TaskListId</span></td>
 
-                    <tr>
-                        <button class="btn btn-primary editBtn" onclick="editRow(this)">Изменить</button>
-                        <form id="editForm+@task.TaskId" class="editForm+@task.TaskId" action="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskedit" method="POST" style="display: none;">
-                            <input type="hidden" name="CurrTask.TaskId" value="@task.TaskId" class="editTaskIdInput">
-                            <td><input type="text" class="form-control editTaskName"></td>
-                            <td><input type="text" class="form-control editTaskDescription"></td>
-                            <td><input type="text" class="form-control editTaskPriority"></td>
-                            <td><input type="text" class="form-control editTaskStatus"></td>
-                            <td><input type="text" class="form-control editTaskDeadline"></td>
-                            <td><input type="text" class="form-control editTaskTaskListId"></td>
-                            <td><button class="btn btn-success saveBtn" style="display: none;" onclick="saveRow(this)">Сохранить</button></td>
-                        </form>
-                        <td><span class="taskName">@task.Name</span></td>
-                        <td><span class="taskDescription">@task.Description</span></td>
-                        <td><span class="taskPriority">@task.Proirity</span></td>
-                        <td><span class="taskStatus">@task.StatusId</span></td>
-                        <td><span class="taskDeadline">@task.DeadlineDate</span></td>
-                        <td><span class="taskTaskListId">@task.TaskListId</span></td>
-
-                        <td>
-                            <button class="btn btn-primary editBtn" onclick="editRow(this)">Изменить</button>
-                            <form class="deleteForm" action="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskdelete/@task.TaskId" method="POST" style="display: none;">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button class="btn btn-danger" type="submit">Удалить</button>
-                            </form>
-                        </td>
-                    </tr>
-                }
+                    <td>
+                            <button class="btn btn-primary editBtn" onclick="editRow(@task.TaskId)">Изменить</button>
+                            <a class="btn btn-primary" href="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskdelete/@task.TaskId">Удалить</a>
+                    </td>
+                </tr>
             }
+        }
         </tbody>
     </table>
 
@@ -64,27 +60,12 @@
 </div>
 
 <script>
-    function editRow(btn) {
-        var row = btn.parentNode.parentNode;
-        var spans = row.querySelectorAll('span');
-        var inputs = row.querySelectorAll('input[type="text"]');
-        var editBtn = row.querySelector('.editBtn');
-        var saveBtn = row.querySelector('.saveBtn');
+    function editRow(taskid) {
+        var row = $('#row-'+taskid);
+        var editRow = $('#editRow-' + taskid);
 
-        spans.forEach(function (span, index) {
-            inputs[index].value = span.innerText;
-            inputs[index].style.display = 'block';
-            span.style.display = 'none';
-        });
-
-        editBtn.style.display = 'none';
-        saveBtn.style.display = 'block';
-    }
-
-    function saveRow(btn) {
-        var row = btn.parentNode.parentNode;
-        var editForm = row.querySelector('.editForm');
-        editForm.submit();
+        row.hide();
+        editRow.show();
     }
 </script>
 

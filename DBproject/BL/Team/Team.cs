@@ -17,8 +17,12 @@ namespace DBproject.BL.Team
             return await teamDAL.CreateTeam(model);
         }
 
+
+
         public async Task EnterInTeam(int executorid, int teamid)
         {
+            if ((await GetTeamsByExecutorId(executorid)).Any(t => t.TeamId == teamid))
+                return;
             await teamDAL.EnterInTeam(executorid, teamid);
         }
 
@@ -32,9 +36,31 @@ namespace DBproject.BL.Team
             return await teamDAL.GetTeam(teamid);
         }
 
-        public Task<IEnumerable<TeamModel>> GetTeamsByExecutorId(int executorid)
+        public async Task<IEnumerable<TeamModel>> GetTeamsByExecutorId(int executorid)
         {
-            return teamDAL.GetTeamsByExecutorId(executorid);
+            return await teamDAL.GetTeamsByExecutorId(executorid);
+        }
+
+
+        public async Task Delete(int id)
+        {
+            await teamDAL.Delete(id);
+        }
+        public async Task Update(TeamModel model)
+        {
+            await teamDAL.Update(model);
+        }
+
+        public async Task<int> UpdateOrCreate(TeamModel model)
+        {
+            if (model.TeamId != null)
+            { 
+                await teamDAL.Update(model);
+                return (int)model.TeamId;
+            }
+            else
+                return await teamDAL.CreateTeam(model);
         }
     }
 }
+

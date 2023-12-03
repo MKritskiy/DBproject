@@ -7,9 +7,9 @@ namespace DBproject.BL.TaskList
         Task<TaskListModel> GetTaskList(int id);
         Task<IEnumerable<TaskListModel>> GetTaskListsByTeamId(int teamid);
         Task<IEnumerable<TaskListModel>> GetTaskLists();
-        Task<int> CreateTaskList(TaskListModel model);
-        Task UpdateTaskList(TaskListModel model);
-        Task UpdateOrCreateTaskList(TaskListModel model);
-
+        Task<int> Create(TaskListModel model);
+        Task Update(TaskListModel model);
+        Task UpdateOrCreate(TaskListModel model);
+        Task Delete(int id);
     }
 }

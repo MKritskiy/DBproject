@@ -6,7 +6,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Team ID</th>
             <th>Name</th>
             <th>TaskLists</th>
 
@@ -14,9 +13,8 @@
     </thead>
     <tbody>
         @foreach (var team in Model)
-        {
-            <tr>
-                <td>@team.TeamId</td>
+        {       
+            <tr id="row-@team.TeamId">
                 <td>@team.Name</td>
                 <td><a href="/team/@team.TeamId">Ссылка</a></td>
             </tr>

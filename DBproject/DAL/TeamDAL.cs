@@ -42,8 +42,19 @@ namespace DBproject.DAL
             return await DbHelper.QueryScalarAsync<int>(sql, model);
         }
 
+        public async Task<IEnumerable<ExecutorModel>> GetExecutorsInTeam(int teamid)
+        {
+            string sql = @"SELECT executor_id AS ExecutorId, executor_name AS Name, executor_email AS Email, 
+                    executor_password AS Password, executor_phone_number AS PhoneNumber, role_id_fk AS RoleId
+                    FROM executor AS e JOIN team_executor AS te ON te.executor_id_fk=e.executor_id
+                    WHERE te.team_id_fk=@id";
+            var parameters = new { id = teamid };
+            return await DbHelper.QueryAsync<ExecutorModel>(sql, parameters);
+        }
+
         public async Task EnterInTeam(int executorid, int teamid)
         {
+
             string sql = @"insert into team_executor(team_id_fk, executor_id_fk)
                     values(@TeamId, @ExecutorId); SELECT LAST_INSERT_ID();";
             var parameters = new
@@ -53,5 +64,26 @@ namespace DBproject.DAL
             };
             await DbHelper.ExecuteAsync(sql, parameters);
         }
+
+        public async Task Delete(int id)
+        {
+            string sql = @"delete from team where team_id = @id";
+            await DbHelper.ExecuteAsync(sql, new { id = id });
+        }
+        public async Task Update(TeamModel model)
+        {
+            string sql = "UPDATE team SET " +
+                    "team_name = @Name " +
+                    "WHERE team_id = @Id";
+
+            var parameters = new
+            {
+                Id = model.TeamId,
+                Name = model.Name
+            };
+
+            await DbHelper.ExecuteAsync(sql, parameters);
+        }
+
     }
 }

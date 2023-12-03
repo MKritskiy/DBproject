@@ -6,29 +6,50 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Task List ID</th>
             <th>Name</th>
-            <th>Team ID</th>
             <th>Link</th>
-
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @if (Model.taskList != null)
+        @if (Model.TaskList != null)
         {
-            @foreach (var taskList in Model.taskList)
+            @foreach (var taskList in Model.TaskList)
             {
-                <tr>
-                    <td>@taskList.TaskListId</td>
+                <tr id="editRow-@taskList.TaskListId" style="display: none;">
+                    <form action="/team/@Model.Team.TeamId/tasklistedit" method="POST">
+                        <input type="hidden" name="TaskListId" value="@taskList.TaskListId">
+                        <td><input type="text" name="Name" class="form-control" value="@taskList.Name"></td>
+                        <td><a href="/team/@taskList.TeamId/tasklist/@taskList.TaskListId">Ссылка</a></td>
+                        <td><button class="btn btn-primary">Сохранить</button></td>
+                    </form>
+                </tr>
+
+
+                <tr id="row-@taskList.TaskListId">
                     <td>@taskList.Name</td>
-                    <td>@taskList.TeamId</td>
                     <td><a href="/team/@taskList.TeamId/tasklist/@taskList.TaskListId">Ссылка</a></td>
+
+                    <td>
+                        <button class="btn btn-primary editBtn" onclick="editRow(@taskList.TaskListId)">Изменить</button>
+                        <a class="btn btn-primary" href="/team/@Model.Team.TeamId/tasklistdelete/@taskList.TaskListId">Удалить</a>
+                    </td>
                 </tr>
             }
         }
     </tbody>
 </table>
-@if (Model.team != null)
+@if (Model.Team != null)
 {
-    <a href="/team/@Model.team.TeamId/tasklistedit">Создать список</a>
+    <a href="/team/@Model.Team.TeamId/tasklistedit">Создать список</a>
 }
+
+<script>
+    function editRow(taskid) {
+        var row = $('#row-' + taskid);
+        var editRow = $('#editRow-' + taskid);
+
+        row.hide();
+        editRow.show();
+    }
+</script>

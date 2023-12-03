@@ -4,7 +4,7 @@ namespace DBproject.ViewModels
 {
     public class TeamViewModel
     {
-        public IEnumerable<TaskListModel>? taskList { get; set; }
-        public TeamModel? team { get; set; }
+        public IEnumerable<TaskListModel>? TaskList { get; set; }
+        public TeamModel? Team { get; set; }
     }
 }

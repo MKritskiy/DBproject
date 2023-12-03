@@ -44,17 +44,24 @@ namespace DBproject.DAL
             return result;
         }
 
-        public async Task UpdateTaskList(TaskListModel model)
+        public async Task Delete(int id)
         {
-            string sql = @"Update task_list
-                    set task_list_name = @Name
-                    where task_list_id = @id; SELECT LAST_INSERT_ID();";
+            string sql = @"delete from task_list where task_list_id = @id";
+            await DbHelper.ExecuteAsync(sql, new { id = id });
+        }
+        public async Task Update(TaskListModel model)
+        {
+            string sql = "UPDATE task_list SET " +
+                    "task_list_name = @Name " +
+                    "WHERE task_list_id = @Id";
+
             var parameters = new
             {
-                Name = model.Name,
-                id = model.TaskListId
+                Id = model.TaskListId,
+                Name = model.Name
             };
-            await DbHelper.QueryScalarAsync<int>(sql, model);
+
+            await DbHelper.ExecuteAsync(sql, parameters);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace DBproject.DAL
             {
                 Name = model.Name,
                 Description = model.Description,
-                Priority = model.Proirity,
+                Priority = model.Priority,
                 DeadlineDate = model.DeadlineDate,
                 StatusId = model.StatusId,
                 SourceId = model.SourceId,
@@ -26,11 +26,7 @@ namespace DBproject.DAL
 
         }
 
-        public async Task Delete(int id)
-        {
-            string sql = @"delete from task where id = @id";
-            await DbHelper.ExecuteAsync(sql, new { id = id });
-        }
+
 
         public async Task<TaskModel> Get(int id)
         {
@@ -53,31 +49,34 @@ namespace DBproject.DAL
                     where tl.task_list_id = @id", new { id = tasklistid });
             return result;
         }
-
+        public async Task Delete(int id)
+        {
+            string sql = @"delete from task where task_id = @id";
+            await DbHelper.ExecuteAsync(sql, new { id = id });
+        }
         public async Task Update(TaskModel model)
         {
-            string sql = "update task set(" +
-                "task_name = @Name, " +
-                "task_description = @Description, " +
-                "task_priority = @Priority, " +
-                "task_deadline_date = @DeadlineDate, " +
-                "status_id_fk = @StatusId, " +
-                "source_id_fk = @SourceId, " +
-                "task_list_id_fk = @TaskListId)" +
-                "where task_id = @Id";
+            string sql = "UPDATE task SET " +
+                    "task_name = @Name, " +
+                    "task_description = @Description, " +
+                    "task_priority = @Priority, " +
+                    "task_deadline_date = @DeadlineDate, " +
+                    "status_id_fk = @StatusId " +
+                    "WHERE task_id = @Id";
+
             var parameters = new
             {
                 Id = model.TaskId,
                 Name = model.Name,
                 Description = model.Description,
-                Priority = model.Proirity,
+                Priority = model.Priority,
                 DeadlineDate = model.DeadlineDate,
                 StatusId = model.StatusId,
-                SourceId = model.SourceId,
                 TaskListId = model.TaskListId,
+                SourceId = model.SourceId
             };
 
-            await DbHelper.ExecuteAsync(sql, model);
+            await DbHelper.ExecuteAsync(sql, parameters);
 
         }
     }

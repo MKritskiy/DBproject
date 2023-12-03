@@ -20,7 +20,7 @@ namespace DBproject.BL.Tasks
 
         public async Task Delete(int id)
         {
-            
+            await taskDAL.Delete(id);
         }
 
         public async Task<TaskModel> Get(int id)
