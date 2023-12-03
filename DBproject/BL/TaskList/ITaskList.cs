@@ -11,5 +11,6 @@ namespace DBproject.BL.TaskList
         Task Update(TaskListModel model);
         Task UpdateOrCreate(TaskListModel model);
         Task Delete(int id);
+        Task<IEnumerable<TaskListModel>> Search(string search);
     }
 }

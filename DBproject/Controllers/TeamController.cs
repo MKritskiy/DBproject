@@ -1,6 +1,7 @@
 ﻿using DBproject.BL.Auth;
 using DBproject.BL.Team;
 using DBproject.DAL.Models;
+using DBproject.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -31,12 +32,12 @@ namespace DBproject.Controllers
         {
             if (ModelState.IsValid)
             {
-                string executorId = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType).Value;
+                string? executorId = httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
 
                 int id = await teamBL.UpdateOrCreate(model);
                 if (id == 0)
                     throw new Exception("Команда не была создана");
-                await teamBL.EnterInTeam(int.Parse(executorId), id);
+  
                 return Redirect("/my-teams");
 
             }
@@ -45,18 +46,45 @@ namespace DBproject.Controllers
 
         [HttpGet]
         [Route("/teams")]
-        public async Task<IActionResult> IndexGetTeams()
+        public async Task<IActionResult> IndexGetTeams(string? search)
         {
-            var teams = await teamBL.GetAllTeams();
-            return View("Teams", teams);
+            List<TeamModel> teams;
+            if (search != null)
+            {
+                ViewData["Search"] = search;
+                teams = (await teamBL.Search(search)).ToList();
+
+            }
+            else
+                teams = (await teamBL.GetAllTeams()).ToList();
+            string? executorId = httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
+            string? userRole = null;
+            if (executorId !=null)
+                userRole = await authBL.GetRoleName(int.Parse(executorId));
+            List<TeamViewModel> teamsVM = new List<TeamViewModel>();
+
+            for (int i = 0; i<teams.Count(); i++)
+            {
+                bool isInTeam = (await teamBL.GetTeamsByExecutorId(int.Parse(executorId ?? "0"))).Any(t => t.TeamId == teams[i].TeamId);
+                teamsVM.Add(new TeamViewModel { Team = teams[i], IsInTeam=isInTeam, UserRole=userRole });
+                
+            }
+            return View("Teams", teamsVM);
         }
 
         [HttpGet]
         [Route("/my-teams")]
-        public async Task<IActionResult> IndexGetMyTeams()
+        public async Task<IActionResult> IndexGetMyTeams(string? search)
         {
+            IEnumerable<TeamModel> teams;
+            if (search != null)
+            {
+                ViewData["Search"] = search;
+                teams = (await teamBL.Search(search)).ToList();
+
+            }
             string executorId = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType).Value;
-            var teams = await teamBL.GetTeamsByExecutorId(int.Parse(executorId));
+            teams = await teamBL.GetTeamsByExecutorId(int.Parse(executorId));
             return View("MyTeams",teams);
         }
 
@@ -65,6 +93,16 @@ namespace DBproject.Controllers
         public async Task<IActionResult> IndexDelete(int teamid)
         {
             await teamBL.Delete(teamid);
+            return Redirect("/my-teams");
+        }
+
+        [HttpGet]
+        [Route("/teamenter/{teamid}")]
+        public async Task<IActionResult> EnterInTeam(int teamid)
+        {
+            string executorId = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType).Value;
+            await teamBL.EnterInTeam(int.Parse(executorId), teamid);
+
             return Redirect("/my-teams");
         }
     }

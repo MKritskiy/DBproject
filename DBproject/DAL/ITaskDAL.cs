@@ -11,5 +11,6 @@ namespace DBproject.DAL
         Task<int> Create(TaskModel model);
         Task Update(TaskModel model);
         Task Delete(int id);
+        Task<IEnumerable<TaskModel>> Search(string? search, int? status=null, int? priority=null);
     }
 }

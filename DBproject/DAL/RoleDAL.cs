@@ -23,6 +23,12 @@ namespace DBproject.DAL
             return result.FirstOrDefault() ?? new RoleModel();
         }
 
+        public async Task<string?> GetRoleName(int roleid)
+        {
+            var result = await DbHelper.QueryAsync<string>(@"CALL GetRole(@id, @role_name); SELECT @role_name as Name;", new { id = roleid });
+            return result.FirstOrDefault();
+        }
+
         public async Task<int> CreateRole(RoleModel model)
         {
             string sql = @"insert into role(role_name)

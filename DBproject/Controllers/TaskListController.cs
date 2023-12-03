@@ -13,13 +13,15 @@ namespace DBproject.Controllers
     {
         private readonly ITeam teamBL;
         private readonly ITaskList taskListBL;
+        private readonly IAuth authBL;
         IHttpContextAccessor httpContextAccessor;
 
-        public TaskListController(ITeam teamBL, ITaskList taskListBL, IHttpContextAccessor httpContextAccessor)
+        public TaskListController(ITeam teamBL, ITaskList taskListBL, IHttpContextAccessor httpContextAccessor, IAuth authBL)
         {
             this.teamBL = teamBL;
             this.taskListBL = taskListBL;
             this.httpContextAccessor = httpContextAccessor;
+            this.authBL = authBL;
         }
 
         [HttpGet]
@@ -57,12 +59,24 @@ namespace DBproject.Controllers
 
         [HttpGet]
         [Route("/team/{teamid}")]
-        public async Task<IActionResult> IndexGetTeamTaskList(int teamid)
+        public async Task<IActionResult> IndexGetTeamTaskList(int teamid, string? search)
         {
-            var tasklist = await taskListBL.GetTaskListsByTeamId(teamid);
+            IEnumerable<TaskListModel> tasklist;
+            if (search!=null)
+            {
+                ViewData["Search"] = search;
+                tasklist = await taskListBL.Search(search);
+            }
+            else
+                tasklist = await taskListBL.GetTaskListsByTeamId(teamid);
             var team = await teamBL.GetTeam(teamid);
-            
-            return View("TeamTaskLists", new TeamViewModel() { TaskList = tasklist, Team=team});
+            string? executorId = httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
+            string? roleName = null;
+            if (executorId != null)
+                roleName = await authBL.GetRoleName(int.Parse(executorId));
+
+            bool isInTeam = (await teamBL.GetTeamsByExecutorId(int.Parse(executorId ?? "0"))).Any(t=>t.TeamId==teamid);
+            return View("TeamTaskLists", new TeamViewModel() { TaskList = tasklist, Team=team, IsInTeam=isInTeam, UserRole=roleName});
         }
 
         [HttpGet]

@@ -1,6 +1,8 @@
-﻿using DBproject.BL.TaskList;
+﻿using DBproject.BL.Auth;
+using DBproject.BL.TaskList;
 using DBproject.BL.Tasks;
 using DBproject.BL.Team;
+using DBproject.DAL;
 using DBproject.DAL.Models;
 using DBproject.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +15,17 @@ namespace DBproject.Controllers
     {
         private readonly ITask taskBL;
         private readonly ITaskList taskListBL;
+        private readonly ITeam teamBL;
+        private readonly IAuth authBL;
         IHttpContextAccessor httpContextAccessor;
 
-        public TaskController(ITask taskBL, ITaskList taskListBL, IHttpContextAccessor httpContextAccessor)
+        public TaskController(ITask taskBL, ITaskList taskListBL, IHttpContextAccessor httpContextAccessor, ITeam teamBL, IAuth authBL)
         {
             this.taskBL = taskBL;
             this.taskListBL = taskListBL;
             this.httpContextAccessor = httpContextAccessor;
+            this.teamBL = teamBL;
+            this.authBL = authBL;
         }
 
         [HttpGet]
@@ -43,7 +49,8 @@ namespace DBproject.Controllers
                 if (task == null)
                     throw new Exception("Задача не заполнена");
                 task.TaskListId = tasklistid;
-                task.StatusId = 1;
+                if (task.StatusId == null)
+                    task.StatusId = 1;
                 task.SourceId = int.Parse(executorId);
                 await taskBL.UpdateOrCreateTask(task);
                 return Redirect("/team/"+teamid+"/tasklist/"+tasklistid);
@@ -54,12 +61,25 @@ namespace DBproject.Controllers
 
         [HttpGet]
         [Route("/team/{teamid}/tasklist/{tasklistid}")]
-        public async Task<IActionResult> IndexGetTaskListTask(int teamid, int tasklistid)
+        public async Task<IActionResult> IndexGetTaskListTask(int teamid, int tasklistid, string? search, int? status, int? priority)
         {
+            IEnumerable<TaskModel> tasks;
+            if (search != null || status!=null || priority!=null)
+            {
+                ViewData["Search"] = search;
+                tasks = await taskBL.Search(search, status, priority);
+            }
+            else
+                tasks = await taskBL.GetAllByTaskListId(tasklistid);
+
+
             var tasklist = await taskListBL.GetTaskList(tasklistid);
-            var tasks = await taskBL.GetAllByTaskListId(tasklistid);
-            
-            return View("TaskListTasks", new TaskListViewModel() { Tasks = tasks, TaskList = tasklist});
+            string? executorId = httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
+            string? roleName = null;
+            if (executorId != null)
+                roleName = await authBL.GetRoleName(int.Parse(executorId));
+            bool isInTeam = (await teamBL.GetTeamsByExecutorId(int.Parse(executorId ?? "0"))).Any(t => t.TeamId == teamid);
+            return View("TaskListTasks", new TaskListViewModel() { Tasks = tasks, TaskList = tasklist, IsInTeam=isInTeam, UserRole=roleName});
         }
 
         [HttpGet]

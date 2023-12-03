@@ -1,5 +1,7 @@
-﻿using DBproject.BL.Team;
+﻿using DBproject.BL.TaskList;
+using DBproject.BL.Team;
 using DBproject.DAL.Models;
+using System.Xml.Linq;
 
 namespace DBproject.DAL
 {
@@ -35,7 +37,7 @@ namespace DBproject.DAL
                     task_priority as Priority, task_deadline_date as DeadlineDate,
                     status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
                     from task
-                    where task_id = @id", new { id = id });
+                    where task_id = @id;", new { id = id });
             return result.FirstOrDefault() ?? new TaskModel();
         }
 
@@ -46,7 +48,7 @@ namespace DBproject.DAL
                     task_priority as Priority, task_deadline_date as DeadlineDate,
                     status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
                     from task AS t JOIN task_list AS tl ON t.task_list_id_fk = tl.task_list_id
-                    where tl.task_list_id = @id", new { id = tasklistid });
+                    where tl.task_list_id = @id  ORDER BY task_priority DESC", new { id = tasklistid });
             return result;
         }
         public async Task Delete(int id)
@@ -78,6 +80,43 @@ namespace DBproject.DAL
 
             await DbHelper.ExecuteAsync(sql, parameters);
 
+        }
+
+
+        public async Task<IEnumerable<TaskModel>> Search(string? search, int? status=null, int? priority=null)
+        {
+            string sql = @"select task_id as TaskId, task_name as Name, task_description as Description, 
+                    task_priority as Priority, task_deadline_date as DeadlineDate,
+                    status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
+                    from task;";
+
+            if (search!=null)
+                sql = @"select task_id as TaskId, task_name as Name, task_description as Description, 
+                    task_priority as Priority, task_deadline_date as DeadlineDate,
+                    status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
+                    from task
+                    where task_name LIKE @search;";
+            if (status != null)
+                sql = @"select task_id as TaskId, task_name as Name, task_description as Description, 
+                    task_priority as Priority, task_deadline_date as DeadlineDate,
+                    status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
+                    from task
+                    where task_name LIKE @search AND status_id_fk=@status;";
+            if (priority != null)
+                sql = @"select task_id as TaskId, task_name as Name, task_description as Description, 
+                    task_priority as Priority, task_deadline_date as DeadlineDate,
+                    status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
+                    from task
+                    where task_name LIKE @search AND task_priority=@priority;";
+            if (status !=null && priority!=null)
+                sql = @"select task_id as TaskId, task_name as Name, task_description as Description, 
+                    task_priority as Priority, task_deadline_date as DeadlineDate,
+                    status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
+                    from task
+                    where task_name LIKE @search AND status_id_fk=@status AND task_priority=@priority;";
+
+            var parameters = new { search = '%' + search + '%', status = status, priority = priority };
+            return await DbHelper.QueryAsync<TaskModel>(sql, parameters);
         }
     }
 }

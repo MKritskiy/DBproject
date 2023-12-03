@@ -13,5 +13,6 @@ namespace DBproject.BL.Tasks
         Task Delete(int id);
 
         Task UpdateOrCreateTask(TaskModel model);
+        Task<IEnumerable<TaskModel>> Search(string? search, int? status, int? priority);
     }
 }

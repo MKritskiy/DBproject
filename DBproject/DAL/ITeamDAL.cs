@@ -12,5 +12,6 @@ namespace DBproject.DAL
         Task Delete(int id);
         Task Update(TeamModel model);
         Task<IEnumerable<ExecutorModel>> GetExecutorsInTeam(int teamid);
+        Task<IEnumerable<TeamModel>> Search(string search);
     }
 }

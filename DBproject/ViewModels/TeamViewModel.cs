@@ -6,5 +6,7 @@ namespace DBproject.ViewModels
     {
         public IEnumerable<TaskListModel>? TaskList { get; set; }
         public TeamModel? Team { get; set; }
+        public bool IsInTeam { get; set; }
+        public string? UserRole { get; set; }
     }
 }

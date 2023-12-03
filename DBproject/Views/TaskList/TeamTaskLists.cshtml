@@ -3,6 +3,11 @@
     ViewData["Title"] = "Списки задач";
 }
 
+<form class="input-group mb-3" action="/team/@Model.Team.TeamId" method="GET">
+    <td><input type="text" name="search" class="form-control" value="@ViewData["Search"]"></td>
+    <td><button class="btn btn-primary">Найти</button></td>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -16,32 +21,36 @@
         {
             @foreach (var taskList in Model.TaskList)
             {
-                <tr id="editRow-@taskList.TaskListId" style="display: none;">
-                    <form action="/team/@Model.Team.TeamId/tasklistedit" method="POST">
-                        <input type="hidden" name="TaskListId" value="@taskList.TaskListId">
-                        <td><input type="text" name="Name" class="form-control" value="@taskList.Name"></td>
-                        <td><a href="/team/@taskList.TeamId/tasklist/@taskList.TaskListId">Ссылка</a></td>
-                        <td><button class="btn btn-primary">Сохранить</button></td>
-                    </form>
-                </tr>
-
+                @if (Model.IsInTeam || Model.UserRole == "ADMIN")
+                {
+                    <tr id="editRow-@taskList.TaskListId" style="display: none;">
+                        <form action="/team/@Model.Team.TeamId/tasklistedit" method="POST">
+                            <input type="hidden" name="TaskListId" value="@taskList.TaskListId">
+                            <td><input type="text" name="Name" class="form-control" value="@taskList.Name"></td>
+                            <td><a href="/team/@taskList.TeamId/tasklist/@taskList.TaskListId">Ссылка</a></td>
+                            <td><button class="btn btn-primary">Сохранить</button></td>
+                        </form>
+                    </tr>
+                }
 
                 <tr id="row-@taskList.TaskListId">
                     <td>@taskList.Name</td>
                     <td><a href="/team/@taskList.TeamId/tasklist/@taskList.TaskListId">Ссылка</a></td>
-
-                    <td>
-                        <button class="btn btn-primary editBtn" onclick="editRow(@taskList.TaskListId)">Изменить</button>
-                        <a class="btn btn-primary" href="/team/@Model.Team.TeamId/tasklistdelete/@taskList.TaskListId">Удалить</a>
-                    </td>
+                    @if (Model.IsInTeam || Model.UserRole == "ADMIN")
+                    {
+                        <td>
+                            <button class="btn btn-primary editBtn" onclick="editRow(@taskList.TaskListId)">Изменить</button>
+                            <a class="btn btn-primary" href="/team/@Model.Team.TeamId/tasklistdelete/@taskList.TaskListId">Удалить</a>
+                        </td>
+                    }
                 </tr>
             }
         }
     </tbody>
 </table>
-@if (Model.Team != null)
+@if (Model.Team != null && (Model.IsInTeam || Model.UserRole == "ADMIN"))
 {
-    <a href="/team/@Model.Team.TeamId/tasklistedit">Создать список</a>
+    <a class="btn btn-primary" href="/team/@Model.Team.TeamId/tasklistedit">Создать список</a>
 }
 
 <script>

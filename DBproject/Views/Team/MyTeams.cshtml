@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "Мои команды";
 }
-
+<form class="input-group mb-3" action="/teams" method="GET">
+    <td><input type="text" name="search" class="form-control" value="@ViewData["Search"]"></td>
+    <td><button class="btn btn-primary">Найти</button></td>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -35,7 +38,7 @@
         }
     </tbody>
 </table>
-
+<a class="btn btn-primary" href="/teamedit">Создать команду</a>
 <script>
     function editRow(taskid) {
         var row = $('#row-' + taskid);

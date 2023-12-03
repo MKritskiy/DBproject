@@ -45,5 +45,10 @@ namespace DBproject.BL.Tasks
             else
                 await Create(model);
         }
+
+        public async Task<IEnumerable<TaskModel>> Search(string? search, int? status, int? priority)
+        {
+            return await taskDAL.Search(search, status, priority);
+        }
     }
 }

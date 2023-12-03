@@ -1,15 +1,20 @@
 ﻿using DBproject.DAL;
 using DBproject.DAL.Models;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace DBproject.BL.Team
 {
     public class Team : ITeam
     {
         private readonly ITeamDAL teamDAL;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public Team(ITeamDAL teamDAL)
+        public Team(ITeamDAL teamDAL, IHttpContextAccessor httpContextAccessor)
         {
             this.teamDAL = teamDAL;
+            this.httpContextAccessor = httpContextAccessor;
+
         }
 
         public async Task<int> CreateTeam(TeamModel model)
@@ -54,12 +59,25 @@ namespace DBproject.BL.Team
         public async Task<int> UpdateOrCreate(TeamModel model)
         {
             if (model.TeamId != null)
-            { 
+            {
                 await teamDAL.Update(model);
                 return (int)model.TeamId;
             }
             else
-                return await teamDAL.CreateTeam(model);
+            {
+                int teamid=  await teamDAL.CreateTeam(model);
+                string? executorId = httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
+                if (executorId != null)
+                    await EnterInTeam(int.Parse(executorId), teamid);
+                return teamid;
+
+            }
+
+        }
+
+        public async Task<IEnumerable<TeamModel>> Search(string search)
+        {
+            return await teamDAL.Search(search);
         }
     }
 }

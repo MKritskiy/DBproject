@@ -17,7 +17,8 @@ namespace DBproject.BL.Auth
 
         Task<int> CreateExecutor(ExecutorModel model);
 
-
+        Task<string?> GetRoleName(int executorid);
+        Task SetRole(int executorid, int roleid);
         Task ValidateName(string name);
 
 

@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace DBproject.Controllers
 {
-    [Authorize(Roles="user")]
+    [Authorize(Roles="USER, ADMIN")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

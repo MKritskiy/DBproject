@@ -49,6 +49,9 @@ namespace DBproject.BL.TaskList
         {
             await taskListDAL.Update(model);
         }
-
+        public async Task<IEnumerable<TaskListModel>> Search(string search)
+        {
+            return await taskListDAL.Search(search);
+        }
     }
 }

@@ -84,5 +84,19 @@ namespace DBproject.BL.Auth
         {
             await httpContextAccessor.HttpContext.SignOutAsync();
         }
+
+        public async Task<string?> GetRoleName(int executorid)
+        {
+            var executor = await executorDAL.GetExecutor(executorid);
+            return await roleDAL.GetRoleName(executor.RoleId);
+        }
+
+
+        public async Task SetRole(int executorid, int roleid)
+        {
+            var executor = await executorDAL.GetExecutor(executorid);
+            executor.RoleId = roleid;
+            await executorDAL.Update(executor);
+        }
     }
 }

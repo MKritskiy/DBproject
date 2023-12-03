@@ -1,23 +1,63 @@
-﻿@model IEnumerable<DBproject.DAL.Models.TeamModel>
+﻿@model IEnumerable<DBproject.ViewModels.TeamViewModel>
 @{
     ViewData["Title"] = "Все команды";
 }
+<form class="input-group mb-3" action="/teams" method="GET">
+    <td><input type="text" name="search" class="form-control" value="@ViewData["Search"]"></td>
+    <td><button class="btn btn-primary">Найти</button></td>
+</form>
 
 <table class="table">
     <thead>
         <tr>
             <th>Name</th>
             <th>TaskLists</th>
-
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var team in Model)
-        {       
-            <tr id="row-@team.TeamId">
-                <td>@team.Name</td>
-                <td><a href="/team/@team.TeamId">Ссылка</a></td>
+        {
+            @if (team.IsInTeam || team.UserRole=="ADMIN")
+            {
+                <tr id="editRow-@team.Team.TeamId" style="display: none;">
+                    <form action="/teamedit/" method="POST">
+                        <input type="hidden" name="TeamId" value="@team.Team.TeamId">
+                        <td><input type="text" name="Name" class="form-control" value="@team.Team.Name"></td>
+                        <td><button class="btn btn-primary">Сохранить</button></td>
+                    </form>
+                </tr>
+            }
+
+            <tr id="row-@team.Team.TeamId">
+                <td>@team.Team.Name</td>
+                <td><a href="/team/@team.Team.TeamId">Ссылка</a></td>
+
+                @if (team.IsInTeam || team.UserRole == "ADMIN")
+                {
+                    <td>
+                        <button class="btn btn-primary editBtn" onclick="editRow(@team.Team.TeamId)">Изменить</button>
+                        <a class="btn btn-primary" href="/teamdelete/@team.Team.TeamId">Удалить</a>
+                    </td>
+                } else
+                {
+                    <td>
+                        <a class="btn btn-primary" href="/teamenter/@team.Team.TeamId">Вступить</a>
+                    </td>
+                }
             </tr>
+
+
         }
     </tbody>
 </table>
+<a class="btn btn-primary" href="/teamedit">Создать команду</a>
+<script>
+    function editRow(taskid) {
+        var row = $('#row-' + taskid);
+        var editRow = $('#editRow-' + taskid);
+
+        row.hide();
+        editRow.show();
+    }
+</script>

@@ -1,16 +1,19 @@
 ﻿using DBproject.BL.Auth;
 using DBproject.DAL.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DBproject.Controllers
 {
     public class LoginController : Controller
     {
         private readonly IAuth authBL;
-
-        public LoginController(IAuth authBL)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public LoginController(IAuth authBL, IHttpContextAccessor httpContextAccessor)
         {
             this.authBL = authBL;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -41,6 +44,16 @@ namespace DBproject.Controllers
         public async Task<IActionResult> IndexOut()
         {
             await authBL.Logout();
+            return Redirect("/");
+        }
+
+        [HttpGet]
+        [Route("/giveadmin")]
+        public async Task<IActionResult> IndexGiveAdmin()
+        {
+            string? executorId = httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
+            if (executorId !=null)
+               await authBL.SetRole(int.Parse(executorId), Helper.AdminRoleID);
             return Redirect("/");
         }
     }

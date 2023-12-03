@@ -1,4 +1,5 @@
 ﻿using DBproject.DAL.Models;
+using System.Xml.Linq;
 
 namespace DBproject.DAL
 {
@@ -37,6 +38,31 @@ namespace DBproject.DAL
                 RoleId = model.RoleId
             };
             return await DbHelper.QueryScalarAsync<int>(sql, parameters);
+        }
+
+        public async Task Update(ExecutorModel model)
+        {
+            string sql = @"UPDATE executor
+                    SET 
+                        executor_name = @Name,
+                        executor_email = @Email,
+                        executor_phone_number = @PhoneNumber,
+                        executor_password = @Password,
+                        role_id_fk = @RoleId
+                    WHERE 
+                        executor_id = @id;
+                    ";
+            var parameters = new
+            {
+                Name = model.Name,
+                Email = model.Email,
+                Password = model.Password,
+                PhoneNumber = model.PhoneNumber,
+                RoleId = model.RoleId,
+                Id = model.ExecutorId
+            };
+
+            await DbHelper.ExecuteAsync(sql, parameters);
         }
     }
 }

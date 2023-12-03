@@ -7,5 +7,6 @@ namespace DBproject.DAL
         Task<RoleModel> GetRole(string name);
         Task<RoleModel> GetRole(int id);
         Task<int> CreateRole(RoleModel model);
+        Task<string?> GetRoleName(int roleid);
     }
 }

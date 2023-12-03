@@ -3,19 +3,36 @@
     ViewData["Title"] = "Список Задач";
 }
 
+<form class="input-group mb-3" action="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId" method="GET">
+    <select class="form-select" aria-label="Default select example" name="status">
+        <option selected value="NULL">Выберите статус выполнения</option>
+        <option value="1">NOT COMPLETED</option>
+        <option value="2">CONSIDERED</option>
+        <option value="3">IN PROGRESS</option>
+        <option value="4">COMPLETED</option>
+    </select>
+    <select class="form-select" aria-label="Default select example" name="priority">
+        <option selected value="NULL">Выберите приоритет</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+    </select>
+    <input type="text" name="search" class="form-control" value="@ViewData["Search"]">
+    <button class="btn btn-primary">Найти</button>
+</form>
 
 <div class="container mt-4">
     <h2>Список задач</h2>
-    <table class="table table-striped">
+    <table class="table table-hover">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Deadline</th>
-                <th>TaskList ID</th>
-                <th></th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Status</th>
+                <th scope="col">Deadline</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -23,37 +40,52 @@
         {
             @foreach (var task in Model.Tasks)
             {
-                <tr id="editRow-@task.TaskId" style="display: none;">
-                    <form action="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskedit" method="POST">
-                        <input type="hidden" name="CurrTask.TaskId" value="@task.TaskId" class="editTaskIdInput">
-                        <td><input type="text" name="CurrTask.Name" class="form-control editTaskName" value="@task.Name"></td>
-                        <td><input type="text" name="CurrTask.Description"  class="form-control editTaskDescription" value="@task.Description"></td>
-                        <td><input type="text" name="CurrTask.Priority" class="form-control editTaskPriority"></td>
-                        <td><span class="taskStatus" name="CurrTask.StatusId">@task.StatusId</span></td>
-                        <td><input type="text" name="CurrTask.DeadlineDate" class="form-control editTaskDeadline"></td>
-                        <td><span class="taskTaskListId" name="CurrTask.TaskListId">@task.TaskListId</span></td>
-                        <td><button class="btn btn-primary btn-sm">Сохранить</button></td>
-                    </form>
-                </tr>
+                    @if (Model.IsInTeam || Model.UserRole == "ADMIN")
+                {
+                    <tr id="editRow-@task.TaskId" style="display: none;">
+                        <form action="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskedit" method="POST">
+                            <input type="hidden" name="CurrTask.TaskId" value="@task.TaskId">
+                            <td><input type="text" name="CurrTask.Name" class="form-control form-control-sm" value="@task.Name"></td>
+                            <td><input type="text" name="CurrTask.Description" class="form-control form-control-sm" value="@task.Description"></td>
+                            <td><input type="text" name="CurrTask.Priority" class="form-control form-control-sm" value="@task.Priority"></td>
+                            <td>
+                                <select class="form-select" name="CurrTask.StatusId">
+                                    <option value=1 >NOT COMPLETED</option>
+                                    <option value=2 >CONSIDERED</option>
+                                    <option value=3 >IN PROGRESS</option>
+                                    <option value=4 >COMPLETED</option>
+                                </select>
+                            </td>
+                            <td><input type="text" name="CurrTask.DeadlineDate" class="form-control form-control-sm" value="@task.DeadlineDate"></td>
+                            <td><button class="btn btn-primary">Сохранить</button></td>
+                        </form>
+                    </tr>
+                }
                 <tr id="row-@task.TaskId">
                     <td><span class="taskName">@task.Name</span></td>
                     <td><span class="taskDescription">@task.Description</span></td>
                     <td><span class="taskPriority">@task.Priority</span></td>
-                    <td><span class="taskStatus">@task.StatusId</span></td>
-                    <td><span class="taskDeadline">@task.DeadlineDate</span></td>
-                    <td><span class="taskTaskListId">@task.TaskListId</span></td>
 
                     <td>
-                            <button class="btn btn-primary editBtn" onclick="editRow(@task.TaskId)">Изменить</button>
+                        <span class="taskStatus">
+                                @(task.StatusId==1 ? "NOT COMPLETED" : task.StatusId==2 ? "CONSIDERED" : task.StatusId==3 ? "IN PROGRESS" : @task.StatusId==4 ? "COMPLETED" : "")
+                        </span>
+                        </td>
+                    <td><span class="taskDeadline">@task.DeadlineDate</span></td>
+                        @if (Model.IsInTeam || Model.UserRole == "ADMIN")
+                        {
+                            <td>
+                                <button class="btn btn-primary editBtn" onclick="editRow(@task.TaskId)">Изменить</button>
                             <a class="btn btn-primary" href="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskdelete/@task.TaskId">Удалить</a>
-                    </td>
+                            </td>
+                    }
                 </tr>
             }
         }
         </tbody>
     </table>
 
-    @if (Model.TaskList != null)
+    @if (Model.TaskList != null && (Model.IsInTeam || Model.UserRole == "ADMIN"))
     {
         <a class="btn btn-primary" href="/team/@Model.TaskList.TeamId/tasklist/@Model.TaskList.TaskListId/taskedit">Создать задачу</a>
     }

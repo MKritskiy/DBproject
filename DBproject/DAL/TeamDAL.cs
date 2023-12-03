@@ -85,5 +85,14 @@ namespace DBproject.DAL
             await DbHelper.ExecuteAsync(sql, parameters);
         }
 
+        public async Task<IEnumerable<TeamModel>> Search(string search)
+        {
+
+            string sql = @"select team_id as TeamId, team_name as Name
+                    from team
+                    where team_name LIKE @search;";
+            var parameters = new { search = '%'+search+'%' };
+            return await DbHelper.QueryAsync<TeamModel>(sql, parameters);
+        }
     }
 }

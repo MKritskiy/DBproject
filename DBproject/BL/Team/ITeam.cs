@@ -12,6 +12,8 @@ namespace DBproject.BL.Team
         Task Delete(int id);
         Task Update(TeamModel model);
         Task<int> UpdateOrCreate(TeamModel model);
+        Task<IEnumerable<TeamModel>> Search(string search);
+
 
     }
 }

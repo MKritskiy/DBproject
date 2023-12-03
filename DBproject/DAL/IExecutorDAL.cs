@@ -7,7 +7,7 @@ namespace DBproject.DAL
         Task<ExecutorModel> GetExecutor(string name);
         Task<ExecutorModel> GetExecutor(int id);
         Task<int> CreateExecutor(ExecutorModel model);
-
+        Task Update(ExecutorModel model);
 
     }
 }
