@@ -12,5 +12,10 @@
         <input name='Name' type="text" value="@Model.Name" />
         <div class="error">@Html.ValidationMessageFor(m=>m.Name)</div>
     </p>
+    <p>
+        <label>Пароль</label><br />
+        <input name='Pass' type="text" value="@Model.Pass" />
+        <div class="error">@Html.ValidationMessageFor(m=>m.Pass)</div>
+    </p>
     <button>Создать</button>
 </form>

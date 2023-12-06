@@ -7,7 +7,7 @@ namespace DBproject.DAL
         public async Task<TeamModel> GetTeam(int teamid)
         {
             var result = await DbHelper.QueryAsync<TeamModel>(@"
-                    select team_id as TeamId, team_name as Name
+                    select team_id as TeamId, team_name as Name, team_pass as Pass
                     from team
                     where team_id = @id", new { id = teamid });
             return result.FirstOrDefault() ?? new TeamModel();
@@ -16,7 +16,7 @@ namespace DBproject.DAL
         public async Task<IEnumerable<TeamModel>> GetTeamsByExecutorId(int executorid)
         {
             var result = await DbHelper.QueryAsync<TeamModel>(@"
-                    select team_id as TeamId, team_name as Name
+                    select team_id as TeamId, team_name as Name, team_pass as Pass
                     from team AS t JOIN team_executor AS te ON t.team_id = te.team_id_fk
                     where te.executor_id_fk = @id", new { id = executorid });
             return result;
@@ -25,7 +25,7 @@ namespace DBproject.DAL
         public async Task<IEnumerable<TeamModel>> GetAllTeams()
         {
             var result = await DbHelper.QueryAsync<TeamModel>(@"
-                    select team_id as TeamId, team_name as Name
+                    select team_id as TeamId, team_name as Name, team_pass as Pass
                     from team
                     ", new { });
             return result;
@@ -33,11 +33,12 @@ namespace DBproject.DAL
 
         public async Task<int> CreateTeam(TeamModel model)
         {
-            string sql = @"insert into team(team_name)
-                    values(@Name); SELECT LAST_INSERT_ID();";
+            string sql = @"insert into team(team_name, team_pass)
+                    values(@Name, @Pass); SELECT LAST_INSERT_ID();";
             var parameters = new
             {
                 Name = model.Name,
+                Pass = model.Pass
             };
             return await DbHelper.QueryScalarAsync<int>(sql, model);
         }
@@ -73,13 +74,15 @@ namespace DBproject.DAL
         public async Task Update(TeamModel model)
         {
             string sql = "UPDATE team SET " +
-                    "team_name = @Name " +
+                    "team_name = @Name, " +
+                    "team_pass = @Pass " +
                     "WHERE team_id = @Id";
 
             var parameters = new
             {
                 Id = model.TeamId,
-                Name = model.Name
+                Name = model.Name,
+                Pass = model.Pass
             };
 
             await DbHelper.ExecuteAsync(sql, parameters);
@@ -88,7 +91,7 @@ namespace DBproject.DAL
         public async Task<IEnumerable<TeamModel>> Search(string search)
         {
 
-            string sql = @"select team_id as TeamId, team_name as Name
+            string sql = @"select team_id as TeamId, team_name as Name, team_pass as Pass
                     from team
                     where team_name LIKE @search;";
             var parameters = new { search = '%'+search+'%' };

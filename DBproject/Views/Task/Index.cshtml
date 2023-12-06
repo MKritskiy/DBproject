@@ -17,14 +17,17 @@
         <input name='CurrTask.Description' type="text" value="@Model.CurrTask?.Description" />
         <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.Description)</div>
     </p>
-    <p>
-        <label>Приоритет</label><br />
-        <input name='CurrTask.Priority' type="text" value="@Model.CurrTask?.Priority" />
-        <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.Priority)</div>
-    </p>
+
+    <select class="form-select-sm" aria-label="Default select example" name='CurrTask.Priority'>
+        <option selected value="NULL">Выберите приоритет</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+    </select>
     <p>
         <label>Дедлайн</label><br />
-        <input name='CurrTask.DeadlineDate' type="text" value="@Model.CurrTask?.DeadlineDate" />
+        <input class="formcontrol" name='CurrTask.DeadlineDate' type="date" value="@Model.CurrTask?.DeadlineDate" />
         <div class="error">@Html.ValidationMessageFor(m=>m.CurrTask.DeadlineDate)</div>
     </p>
     <button>Создать</button>

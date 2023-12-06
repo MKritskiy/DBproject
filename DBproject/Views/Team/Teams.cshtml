@@ -16,6 +16,7 @@
         </tr>
     </thead>
     <tbody>
+
         @foreach (var team in Model)
         {
             @if (team.IsInTeam || team.UserRole=="ADMIN")
@@ -25,6 +26,19 @@
                         <input type="hidden" name="TeamId" value="@team.Team.TeamId">
                         <td><input type="text" name="Name" class="form-control" value="@team.Team.Name"></td>
                         <td><button class="btn btn-primary">Сохранить</button></td>
+                    </form>
+                </tr>
+            }
+            @if (!team.IsInTeam || team.UserRole != "ADMIN")
+            {
+                <tr id="enterRow-@team.Team.TeamId" style="display: none;">
+                    <form action="/teamenter/@team.Team.TeamId" method="POST">
+                        <input type="hidden" name="TeamId" value="@team.Team.TeamId">
+                        <input type="hidden" name="Name" value="@team.Team.Name">
+                        <td>@team.Team.Name</td>
+                        <td><a href="/team/@team.Team.TeamId">Ссылка</a></td>
+                        <td><input type="password" name="Pass" class="form-control" ></td>
+                        <td><button class="btn btn-primary">Войти</button></td>
                     </form>
                 </tr>
             }
@@ -42,7 +56,7 @@
                 } else
                 {
                     <td>
-                        <a class="btn btn-primary" href="/teamenter/@team.Team.TeamId">Вступить</a>
+                        <a class="btn btn-primary" onclick="enterRow(@team.Team.TeamId)">Вступить</a>
                     </td>
                 }
             </tr>
@@ -56,6 +70,13 @@
     function editRow(taskid) {
         var row = $('#row-' + taskid);
         var editRow = $('#editRow-' + taskid);
+
+        row.hide();
+        editRow.show();
+    }
+    function enterRow(taskid) {
+        var row = $('#row-' + taskid);
+        var editRow = $('#enterRow-' + taskid);
 
         row.hide();
         editRow.show();

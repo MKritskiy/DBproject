@@ -96,12 +96,18 @@ namespace DBproject.Controllers
             return Redirect("/my-teams");
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("/teamenter/{teamid}")]
-        public async Task<IActionResult> EnterInTeam(int teamid)
+        public async Task<IActionResult> EnterInTeam(TeamModel model, int teamid)
         {
             string executorId = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultNameClaimType).Value;
-            await teamBL.EnterInTeam(int.Parse(executorId), teamid);
+            var team = await teamBL.GetTeam(teamid);
+            if (team.Pass == model.Pass)
+                await teamBL.EnterInTeam(int.Parse(executorId), teamid);
+            else
+            { 
+                return Redirect("/teams");
+            }
 
             return Redirect("/my-teams");
         }

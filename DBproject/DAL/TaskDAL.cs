@@ -48,7 +48,7 @@ namespace DBproject.DAL
                     task_priority as Priority, task_deadline_date as DeadlineDate,
                     status_id_fk as StatusId, source_id_fk as SourceId, task_list_id_fk as TaskListId
                     from task AS t JOIN task_list AS tl ON t.task_list_id_fk = tl.task_list_id
-                    where tl.task_list_id = @id  ORDER BY task_priority DESC", new { id = tasklistid });
+                    where tl.task_list_id = @id  ORDER BY task_priority", new { id = tasklistid });
             return result;
         }
         public async Task Delete(int id)
